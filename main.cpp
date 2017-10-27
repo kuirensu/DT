@@ -5,7 +5,7 @@
 //  Created by Kuiren Su on 10/17/17.
 //  Copyright © 2017 Kuiren Su. All rights reserved.
 //
-
+//
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -28,11 +28,17 @@ int main(int argc, const char * argv[]) {
     int rows80 = (rows * 4)/5;
     int rows20 = rows - rows80;
     int rows60 = rows - 2*rows20;
-    
+    int cols = numberOfColumns(argv[1]);
     //cout << rows20 <<  " " << rows60<<" " << rows80<<  endl;
-    char trainingSetOne [rows80][23]; //80%
-    char testingSetOne [rows20][23]; //20%
-    int successOne = parseFileOne(argv[1],trainingSetOne,  testingSetOne, rows80, rows20 );
+    char **trainingSetOne = new char* [rows80]; //80%
+    for (int i = 0; i < rows80; i++) {
+        trainingSetOne[i] = new char [cols];
+    }
+    char **testingSetOne = new char *[rows20]; //20%
+    for (int i = 0; i < rows20; i++) {
+        testingSetOne[i] = new char [cols];
+    }
+    int successOne = parseFileOne(argv[1], trainingSetOne,  testingSetOne, rows80, rows20 , cols); 
 
     if (!successOne){
         cout << "failed parsing file..." << endl;
@@ -42,7 +48,7 @@ int main(int argc, const char * argv[]) {
         examplesOne.insert(i);
     }
     set<int> attributesOne;
-    for (int i = 1; i < 23; i ++ ){
+    for (int i = 1; i < cols; i ++ ){
         attributesOne.insert(i);
     }
     TreeNode * root = decisionTreeLearningOne(examplesOne, examplesOne, attributesOne, trainingSetOne);
@@ -50,7 +56,9 @@ int main(int argc, const char * argv[]) {
     stringstream trainingSetOneCorrectness;
      trainingSetOneCorrectness<<fixed<< setprecision(2) <<100*percentageOfCorrectness (root, rows80, trainingSetOne );
     stringstream testingSetOneCorrectness;
+    
     testingSetOneCorrectness<<fixed<< setprecision(2) << 100*percentageOfCorrectness (root, rows20, testingSetOne );
+    
     cout << "********Part 1*********" <<endl;
     cout << "Accuracy for trainingSet(80%) is : " <<trainingSetOneCorrectness.str() << "%"<< endl;
     cout << "Accuracy for testingSet(20%) is : " <<testingSetOneCorrectness.str()<<"%"<< endl;
@@ -62,12 +70,30 @@ int main(int argc, const char * argv[]) {
     double maxValidationAccuracy = 0.0;
     int bestDepth = 0;
     double maxTestingAccuracy = 0.0;
+    
+    //allocate arrays 
+    char** trainingSetTwo ; // 60%
+    trainingSetTwo = new char *[rows60];
+    for (int j = 0; j < rows60;j++) {
+        trainingSetTwo[j] = new char [cols];
+    }
+    char** validationSetTwo ; // 20%
+    validationSetTwo = new char *[rows20];
+    for (int j = 0; j < rows20; j++) {
+        validationSetTwo[j] = new char [cols];
+    }
+    char** testingSetTwo ; //20%
+    testingSetTwo = new char *[rows20];
+    for (int j = 0; j < rows20; j++) {
+        testingSetTwo[j] = new char [cols];
+    }
+    
+    
+    
     for (int i = 1; i < 16; i++){
         cout << " " << i << "\t" ;
-        char trainingSetTwo [rows60][23]; // 60%
-        char validationSetTwo [rows20][23]; // 20%
-        char testingSetTwo [rows20][23]; //20%
-        int successTwo = parseFileTwo(argv[1], trainingSetTwo, validationSetTwo, testingSetTwo, rows60, rows20);
+        
+        int successTwo = parseFileTwo(argv[1], trainingSetTwo, validationSetTwo, testingSetTwo, rows60, rows20,cols);
         // cout<< "success: " <<success << endl;
         if (!successTwo){
             cout << "failed parsing file..." << endl;
@@ -96,6 +122,7 @@ int main(int argc, const char * argv[]) {
         stringstream validationAccuracyTwoCorrectness;
         validationAccuracyTwoCorrectness << fixed << setprecision(2)<<100*validationAccuracy;
         cout <<" "<< trainingSetTwoCorrectness.str()<< "% \t" <<validationAccuracyTwoCorrectness.str()<< "% " <<endl;
+        //printTree(rootTwo);
 
     }
     stringstream maxTestingAccuracyCorrectness;

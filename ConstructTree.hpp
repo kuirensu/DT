@@ -5,7 +5,7 @@
 //  Created by Kuiren Su on 10/20/17.
 //  Copyright © 2017 Kuiren Su. All rights reserved.
 //
-
+//
 #ifndef ConstructTree_hpp
 #define ConstructTree_hpp
 #include <map>
@@ -29,8 +29,8 @@ public:
     void setResult(int result);
     void addSubtree(char feature, TreeNode* node);
 };
-TreeNode * decisionTreeLearningOne(set<int> childExamples, set<int> parentExamples, set<int> attributes, char trainingSet[][23]) ;
-TreeNode * decisionTreeLearningTwo(set<int> childExamples, set<int> parentExamples, set<int> attributes, char trainingSet[][23], int depth, int currentDepth);
+TreeNode * decisionTreeLearningOne(set<int> childExamples, set<int> parentExamples, set<int> attributes, char **trainingSet) ;
+TreeNode * decisionTreeLearningTwo(set<int> childExamples, set<int> parentExamples, set<int> attributes, char **trainingSet, int depth, int currentDepth);
 void printTree(TreeNode *node);
-double percentageOfCorrectness (TreeNode * root, int rows, char testingSet[][23]);
+double percentageOfCorrectness (TreeNode * root, int rows, char **testingSet);
 #endif /* ConstructTree_hpp */

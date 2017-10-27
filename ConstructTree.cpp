@@ -5,7 +5,7 @@
 //  Created by Kuiren Su on 10/20/17.
 //  Copyright © 2017 Kuiren Su. All rights reserved.
 //
-
+//
 #include "ConstructTree.hpp"
 #include <map>
 #include <set>
@@ -34,7 +34,7 @@ void TreeNode::addSubtree(char feature, TreeNode* node  ){
     this->branches.insert(pair<char,TreeNode*>(feature, node));
 }
 
-int findPlurality (set<int> examples, char trainingSet[][23]){
+int findPlurality (set<int> examples, char **trainingSet){
     int zeros = 0;
     int ones = 0;
     for (auto const& it : examples){
@@ -47,7 +47,7 @@ int findPlurality (set<int> examples, char trainingSet[][23]){
     return (ones > zeros) ? 1 : 0;
 }
 
-bool haveSameClassification(set<int> examples,char trainingSet[][23]){
+bool haveSameClassification(set<int> examples,char**trainingSet){
     int zeros = 0;
     int ones = 0;
     for (auto const& it : examples){
@@ -64,7 +64,7 @@ bool haveSameClassification(set<int> examples,char trainingSet[][23]){
     return true;
 }
 //examples is not empty and only one result possible thus we only loop once
-int findClassification(set<int> examples, char trainingSet[][23]){
+int findClassification(set<int> examples, char** trainingSet){
     for (auto const& it : examples){
         if(trainingSet[it][0] == '1'){
             return 1;
@@ -75,7 +75,7 @@ int findClassification(set<int> examples, char trainingSet[][23]){
     return -1;
 }
 //find all features of an attribute and their corresponding examples row numbers
-map<char, set<int>> featuresOfAttribute(int attribute, set<int> examples, char trainingSet[][23]){
+map<char, set<int>> featuresOfAttribute(int attribute, set<int> examples, char** trainingSet){
     map<char, set<int>> features;
     for (auto const& it : examples){//all examples row numbers
         map<char, set<int>>::iterator feature = features.find(trainingSet[it][attribute]);
@@ -90,7 +90,7 @@ map<char, set<int>> featuresOfAttribute(int attribute, set<int> examples, char t
     return features;
 }
 //part one
-TreeNode * decisionTreeLearningOne(set<int> childExamples, set<int> parentExamples, set<int> attributes, char trainingSet[][23]) {
+TreeNode * decisionTreeLearningOne(set<int> childExamples, set<int> parentExamples, set<int> attributes, char **trainingSet) {
     if (childExamples.size() == 0 ){
         //cout<<"childExamples.size() == 0"<<endl;
         int plurality = findPlurality(parentExamples,trainingSet);
@@ -101,12 +101,12 @@ TreeNode * decisionTreeLearningOne(set<int> childExamples, set<int> parentExampl
         TreeNode *node = new TreeNode(findClassification(childExamples,trainingSet));
         return node;
     }else if (attributes.empty()){
-          //cout<<"reach3"<<endl;
+        //cout<<"reach3"<<endl;
         TreeNode *node = new TreeNode(findPlurality(childExamples,trainingSet));
         return node;
     }else {
-       
-        int attribute = pickNextAttribute(trainingSet, childExamples ,attributes);
+        //cout << "reach 4" << endl;
+        int attribute = pickNextAttribute(trainingSet, childExamples ,attributes); 
         //cout <<"pickNextAttribute: " <<attribute << endl;
         //attributes = attributes - A;
         attributes.erase(attribute);
@@ -126,9 +126,10 @@ TreeNode * decisionTreeLearningOne(set<int> childExamples, set<int> parentExampl
         return node;
     }
 }
+
 //part two*****************
-TreeNode * decisionTreeLearningTwo(set<int> childExamples, set<int> parentExamples, set<int> attributes, char trainingSet[][23], int depth, int currentDepth) {
-    currentDepth += 1;
+TreeNode * decisionTreeLearningTwo(set<int> childExamples, set<int> parentExamples, set<int> attributes, char** trainingSet, int depth, int currentDepth) {
+    
     if (childExamples.size() == 0 ){
         //cout<<"childExamples.size() == 0"<<endl;
         int plurality = findPlurality(parentExamples,trainingSet);
@@ -160,6 +161,7 @@ TreeNode * decisionTreeLearningTwo(set<int> childExamples, set<int> parentExampl
         map<char, set<int>> features = featuresOfAttribute(attribute, childExamples, trainingSet);
         //cout<< "number of features at attribute " <<attribute << " is " <<features.size() << endl;
         TreeNode *node = new TreeNode(attribute, features);
+        currentDepth += 1;
         for (auto const& it : features){
             set<int> exs = it.second;
             TreeNode * subTree = decisionTreeLearningTwo(exs,childExamples,attributes,trainingSet,depth,currentDepth);
@@ -192,11 +194,15 @@ bool checkCorrectness(TreeNode * node, char *example){
     }
     char feature = example[node->getAttribute()];
     map<char ,TreeNode*> branches = node->getBranches();
+    if (branches.find(feature) == branches.end()){
+        return false;
+    }
     TreeNode * nextNode = branches.find(feature)->second;
+    
     return checkCorrectness(nextNode, example);
 }
 
-double percentageOfCorrectness (TreeNode * root, int rows, char testingSet[][23]) {
+double percentageOfCorrectness (TreeNode * root, int rows, char **testingSet) {
     int correctness = 0;
     for (int i = 0 ; i < rows ; i++){
         if(checkCorrectness(root, testingSet[i])){

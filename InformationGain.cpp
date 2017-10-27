@@ -4,7 +4,7 @@
 //
 //  Created by Kuiren Su on 10/17/17.
 //  Copyright © 2017 Kuiren Su. All rights reserved.
-//
+////
 #include <iostream>
 #include <cstdlib>
 #include <tgmath.h>
@@ -38,7 +38,7 @@ double informationGain(map<char, pair<int, int >> feature, int exampleSize){
     return infoGain;
 };
 
-int pickNextAttribute(char trainningSet[][23], set<int> examples, set<int> attributes ) {
+int pickNextAttribute(char **trainningSet, set<int> examples, set<int> attributes ) {
     map<int , map<char, pair<int, int >>> allAttributes;
 
     for (auto const& a : attributes){

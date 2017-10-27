@@ -4,7 +4,7 @@
 //
 //  Created by Kuiren Su on 10/17/17.
 //  Copyright © 2017 Kuiren Su. All rights reserved.
-//
+////
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -13,16 +13,17 @@
 #include "FileParser.hpp"
 
 const char* const DELIMITER = ",";
-const int MAX_CHARS_PER_LINE = 46;
+
 const int TRAINING = 0;
 const int VALIDATION = 1;
 const int TESTING = 2;
 using namespace std;
 
 //creating two random sets
-int parseFileOne(string filename, char trainingSet [][23], char testingSet[][23], int rows80, int rows20 ){
+int parseFileOne(string filename, char **trainingSet, char **testingSet, int rows80, int rows20, int cols){
     int MAX_ROW_TWENTYPERCENT = rows20;
     int MAX_ROW_EIGHTYPERCENT = rows80;
+    int MAX_CHARS_PER_LINE = 2*cols;
     ifstream fin;
     fin.open(filename);
     if (!fin.good())
@@ -69,7 +70,10 @@ int parseFileOne(string filename, char trainingSet [][23], char testingSet[][23]
             }
             //cout << "Row: "<< row << " index: " << index << " token: " << data[row][index] << endl;
             chars = strtok (NULL, ",");
-            index++;
+            index += 1;
+            if(index == cols ){
+                break;
+            }
         }
         //row++;
         if(tl == TRAINING){
@@ -88,9 +92,10 @@ int parseFileOne(string filename, char trainingSet [][23], char testingSet[][23]
 
 
 
-int parseFileTwo(string filename, char trainingSet [][23], char validationSet [][23], char testingSet[][23] ,int rows60, int rows20){
+int parseFileTwo(string filename, char **trainingSet, char **validationSet, char** testingSet ,int rows60, int rows20, int cols){
     int MAX_ROW_TWENTYPERCENT = rows20;
     int MAX_ROW_SIXTYPERCENT = rows60;
+    int MAX_CHARS_PER_LINE = 2*cols;
     ifstream fin;
     fin.open(filename);
     if (!fin.good())
@@ -170,6 +175,9 @@ int parseFileTwo(string filename, char trainingSet [][23], char validationSet []
             //cout << "Row: "<< row << " index: " << index << " token: " << data[row][index] << endl;
             chars = strtok (NULL, ",");
             index++;
+            if(index == cols){
+                break;
+            }
         }
         //row++;
         if(tvl == TRAINING){
@@ -216,8 +224,6 @@ int numberOfColumns(string filename){
     while (getline(ss, fistLine, CDELIMITER))
         vec.push_back(fistLine);
     
-    for (size_t i = 0; i < vec.size(); i++)
-        std::cout << "Token[" << i << "] = " << vec[i] << "\n";
     return int(vec.size());
 }
 
