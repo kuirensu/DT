@@ -62,8 +62,14 @@ int main(int argc, const char * argv[]) {
     cout << "********Part 1*********" <<endl;
     cout << "Accuracy for trainingSet(80%) is : " <<trainingSetOneCorrectness.str() << "%"<< endl;
     cout << "Accuracy for testingSet(20%) is : " <<testingSetOneCorrectness.str()<<"%"<< endl;
-     
-    
+    for (int i = 0; i < rows80; i++) {
+        delete[] trainingSetOne[i];
+    }
+    delete[] trainingSetOne;
+    for (int i = 0; i < rows20; i++) {
+        delete[] testingSetOne[i];
+    }
+    delete []testingSetOne;
     //part 2
     cout << "********Part 2*********" <<endl;
     cout << "depth train% valid%" << endl;
@@ -131,6 +137,18 @@ int main(int argc, const char * argv[]) {
     cout << "Here the testing set accuracy is: " << maxTestingAccuracyCorrectness.str() <<"%"<< endl;
     
     
+    for (int j = 0; j < rows60;j++) {
+        delete[] trainingSetTwo[j] ;
+    }
+    delete [] trainingSetTwo;
+    for (int j = 0; j < rows20; j++) {
+        delete[] validationSetTwo[j];
+    }
+    delete []validationSetTwo;
+    for (int j = 0; j < rows20; j++) {
+        delete[] testingSetTwo[j] ;
+    }
+    delete []testingSetTwo;
     return 0;
 }
 
